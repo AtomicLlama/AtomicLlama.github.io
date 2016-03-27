@@ -57,7 +57,8 @@ var items = [{
   in: true
 },{
   id: "#t5",
-  animation: "rubberBand"
+  animation: "rubberBand",
+  constant: true
 }];
 
 var animationsForButton = [
