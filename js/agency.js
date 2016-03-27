@@ -5,10 +5,11 @@
  */
 
  $.fn.extend({
-     animateCss: function (animationName) {
+     animateCss: function (animationName, callback) {
          var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
          $(this).addClass('animated ' + animationName).one(animationEnd, function() {
              $(this).removeClass('animated ' + animationName);
+             callback();
          });
      }
  });
@@ -36,44 +37,75 @@ $('.navbar-collapse ul li a').click(function() {
 
 var items = [{
   id: ".team-member",
-  animation: "pulse"
+  animation: "bounceIn",
+  in: true
 },{
   id: "#t1",
-  animation: "swing"
+  animation: "slideInLeft",
+  in: true
 },{
   id: "#t2",
-  animation: "swing"
+  animation: "slideInRight",
+  in: true
 },{
   id: "#t3",
-  animation: "swing"
+  animation: "slideInLeft",
+  in: true
 },{
   id: "#t4",
-  animation: "swing"
+  animation: "slideInRight",
+  in: true
 },{
   id: "#t5",
   animation: "rubberBand"
-},{
-  id: "#heart",
-  animation: "pulse"
 }];
+
+var animationsForButton = [
+  "bounce",
+  "tada",
+  "shake",
+  "pulse"
+];
+
+function animateButton() {
+  var r = Math.floor(Math.random() * animationsForButton.length);
+  var animation = animationsForButton[r];
+  $("#llamabutton").animateCss(animation);
+}
+
+function startAnimatingButton() {
+  animateButton();
+  setTimeout(function () {
+    startAnimatingButton();
+  },2500);
+}
+
+startAnimatingButton();
 
 var itemsVisibles = {};
 
-function animate(id,animation) {
+function animate(item) {
+  var id = item.id;
+  var animation = item.animation;
   var windowOffset = $(window).scrollTop();
   var elementOffset = $(id).offset().top;
   var elemetnHeight = $(id).height();
   var windowHeight = $(window).height();
   var value = windowOffset <= elementOffset && windowOffset + windowHeight >= elementOffset + elemetnHeight;
+  if (item.in) {
+    value = elementOffset - (windowOffset + windowHeight) <= 5;
+  }
   if (value && !itemsVisibles[id]) {
     itemsVisibles[id] = true;
     $(id).animateCss(animation);
+  } else if (item.constant) {
+    itemsVisibles[id] = value;
   }
 }
 
 function doAnimations() {
   for (var i = 0; i < items.length; i++) {
-    animate(items[i].id,items[i].animation);
+    animate(items[i]);
   }
 }
 
